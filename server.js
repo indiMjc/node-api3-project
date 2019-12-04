@@ -4,7 +4,8 @@ const usersRouter = require("./users/userRouter");
 
 const server = express();
 
-server.use(usersRouter, logger);
+server.use("/users", usersRouter);
+server.use(logger);
 
 server.get("/", (req, res) => {
   res.send(`<h2>Let's write some middleware!</h2>`);
