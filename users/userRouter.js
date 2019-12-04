@@ -46,7 +46,15 @@ router.get("/:id", (req, res) => {
 });
 
 router.get("/:id/posts", (req, res) => {
-  // do your magic!
+  const { id } = req.params;
+  UserDb.getUserPosts(id)
+    .then(posts => {
+      res.status(200).json(posts);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Posts for user could not be retrieved." });
+    });
 });
 
 router.delete("/:id", (req, res) => {
