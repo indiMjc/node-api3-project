@@ -6,8 +6,16 @@ const UserDb = require("./userDb");
 
 router.use(express.json());
 
-router.post("/", (req, res) => {
-  // do your magic!
+router.post("/", validateUser, (req, res) => {
+  const { name } = req.body;
+  UserDb.insert({ name: name })
+    .then(user => {
+      res.status(201).json(user);
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ message: "Error saving new user." });
+    });
 });
 
 router.post("/:id/posts", (req, res) => {
@@ -84,15 +92,44 @@ router.put("/:id", (req, res) => {
 //custom middleware
 
 function validateUserId(req, res, next) {
-  //   const userId = req.body.user_id
+  const { id } = req.params;
+  UserDb.getById(id)
+    .then(user => {
+      if (user) {
+        req.user = user;
+        next();
+      } else {
+        res.status(400).json({ message: "Invalid ID." });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Error validating ID." });
+    });
 }
 
 function validateUser(req, res, next) {
-  // do your magic!
+  if (req.body) {
+    if (req.body.name) {
+      next();
+    } else {
+      res.status(400).json({ message: "Name field required." });
+    }
+  } else {
+    res.status(400).json({ message: "User data required." });
+  }
 }
 
 function validatePost(req, res, next) {
-  // do your magic!
+  if (req.body) {
+    if (req.body.text) {
+      next();
+    } else {
+      res.status(400).json({ message: "Post text field required." });
+    }
+  } else {
+    res.status(400).json({ message: "Post data required." });
+  }
 }
 
 module.exports = router;
