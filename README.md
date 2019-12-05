@@ -99,4 +99,4 @@ We have provided test data for the resources.
   - Use `create-react-app` to create an application inside the root folder, name it `client`.
   - From the React application connect to the `/api/users` endpoint in the API and show the list of users.
   - Add functionality to show the details of a user, including their posts, when clicking a user name in the list. Use React Router to navigate to a `/users/:id` route to show the user details.
-  - Add styling!
+  - Add styling!!
