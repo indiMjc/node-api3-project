@@ -2,7 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-const UserDb = require("../users/userDb");
 const PostsDb = require("./postDb");
 
 router.use(express.json());
@@ -18,10 +17,8 @@ router.get("/", (req, res) => {
     });
 });
 
-router.get("/:id", validatePostId, (req, res) => {});
-
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
+router.delete("/:id", validatePostId, (req, res) => {
+  const { id } = req.post;
   PostsDb.remove(id)
     .then(() => {
       res.status(200).json({ message: "Post deleted." });
@@ -32,11 +29,17 @@ router.delete("/:id", (req, res) => {
     });
 });
 
-router.put("/:id", (req, res) => {
-  // do your magic!
+router.put("/:id", validatePostId, (req, res) => {
+  const { id } = req.post;
+  PostsDb.update(id, { text: req.body.text })
+    .then(() => {
+      res.status(200).json({ message: "Post edited." });
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).json({ error: "Post edit failed." });
+    });
 });
-
-// custom middleware
 
 function validatePostId(req, res, next) {
   const { id } = req.params;
