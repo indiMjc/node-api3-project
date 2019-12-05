@@ -1,10 +1,12 @@
 const express = require("express");
 
 const usersRouter = require("./users/userRouter");
+const postsRouter = require("./posts/postRouter");
 
 const server = express();
 
 server.use("/users", usersRouter);
+server.use("/posts", postsRouter);
 server.use(express.json());
 server.use(logger);
 
