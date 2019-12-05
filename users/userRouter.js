@@ -45,7 +45,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", validateUserId, (req, res) => {
-  const id = req.params.id;
+  const { id } = req.user;
   UserDb.getById(id)
     .then(user => {
       res.status(200).json(user);
@@ -57,7 +57,7 @@ router.get("/:id", validateUserId, (req, res) => {
 });
 
 router.get("/:id/posts", validateUserId, (req, res) => {
-  const id = req.user.id;
+  const { id } = req.user;
   UserDb.getUserPosts(id)
     .then(posts => {
       res.status(200).json(posts);
@@ -69,7 +69,7 @@ router.get("/:id/posts", validateUserId, (req, res) => {
 });
 
 router.delete("/:id", validateUserId, (req, res) => {
-  const id = req.user.id;
+  const { id } = req.user;
   UserDb.getById(id)
     .then(user => {
       UserDb.remove(id)
@@ -88,7 +88,7 @@ router.delete("/:id", validateUserId, (req, res) => {
 });
 
 router.put("/:id", validateUserId, validateUser, (req, res) => {
-  const id = req.user.id;
+  const { id } = req.user;
   UserDb.update(id, { name: req.body.name })
     .then(() => {
       UserDb.getById(id)
@@ -106,11 +106,10 @@ router.put("/:id", validateUserId, validateUser, (req, res) => {
     });
 });
 
-//custom middleware
-
 function validateUserId(req, res, next) {
   const { id } = req.params;
-  if (id) {
+  !id && res.status(400).json({ message: "User ID required." });
+  id &&
     UserDb.getById(id)
       .then(user => {
         if (user) {
@@ -124,9 +123,6 @@ function validateUserId(req, res, next) {
         console.log(err);
         res.status(500).json({ error: "Error validating ID." });
       });
-  } else {
-    res.status(400).json({ message: "User ID required." });
-  }
 }
 
 function validateUser(req, res, next) {
